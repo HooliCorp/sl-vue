@@ -25,6 +25,14 @@ steps:
     SHIFTLEFT_ACCESS_TOKEN: $(SHIFTLEFT_ACCESS_TOKEN)
 
 - script: |
+    $(Agent.HomeDirectory)/sl check-analysis --app sl-vue-az
+  displayName: 'ShiftLeft check analysis'
+  workingDirectory: '$(Build.SourcesDirectory)'
+  continueOnError: "true"
+  env:
+    SHIFTLEFT_ACCESS_TOKEN: $(SHIFTLEFT_ACCESS_TOKEN)
+
+- script: |
     mkdir -p $(Build.ArtifactStagingDirectory)/CodeAnalysisLogs
     curl -H "Authorization: Bearer ${SHIFTLEFT_ACCESS_TOKEN}" -L "https://www.shiftleft.io/api/v4/orgs/${SHIFTLEFT_ORG_ID}/apps/sl-vue-az/findings?per_page=249&type=secret&type=vuln&type=extscan" -o $(Build.ArtifactStagingDirectory)/CodeAnalysisLogs/findings.json
     sudo pip install joern2sarif
