@@ -1,0 +1,51 @@
+# Node.js with Vue
+# Build a Node.js project that uses Vue.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+- main
+- feature/*
+
+pool:
+  vmImage: ubuntu-20.04
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '14.x'
+  displayName: 'Install Node.js'
+
+- script: |
+    curl https://cdn.shiftleft.io/download/sl > $(Agent.HomeDirectory)/sl && chmod a+rx $(Agent.HomeDirectory)/sl
+    $(Agent.HomeDirectory)/sl analyze --app sl-vue-az --wait --tag branch=$(Build.SourceBranchName) --js --cpg .
+  displayName: 'ShiftLeft NG SAST'
+  workingDirectory: '$(Build.SourcesDirectory)'
+  env:
+    SHIFTLEFT_ACCESS_TOKEN: $(SHIFTLEFT_ACCESS_TOKEN)
+
+- script: |
+    $(Agent.HomeDirectory)/sl check-analysis --app sl-vue-az
+  displayName: 'ShiftLeft check analysis'
+  workingDirectory: '$(Build.SourcesDirectory)'
+  continueOnError: "true"
+  env:
+    SHIFTLEFT_ACCESS_TOKEN: $(SHIFTLEFT_ACCESS_TOKEN)
+
+- script: |
+    mkdir -p $(Build.ArtifactStagingDirectory)/CodeAnalysisLogs
+    curl -H "Authorization: Bearer ${SHIFTLEFT_ACCESS_TOKEN}" -L "https://www.shiftleft.io/api/v4/orgs/${SHIFTLEFT_ORG_ID}/apps/sl-vue-az/findings?per_page=249&type=secret&type=vuln&type=extscan" -o $(Build.ArtifactStagingDirectory)/CodeAnalysisLogs/findings.json
+    sudo pip install joern2sarif
+    joern2sarif -t ng-sast -i $(Build.ArtifactStagingDirectory)/CodeAnalysisLogs/findings.json -o $(Build.ArtifactStagingDirectory)/CodeAnalysisLogs/ngsast-findings.sarif
+  displayName: 'Convert to SARIF'
+  workingDirectory: '$(Build.SourcesDirectory)'
+  env:
+    SHIFTLEFT_ACCESS_TOKEN: $(SHIFTLEFT_ACCESS_TOKEN)
+    WORKSPACE: https://github.com/HooliCorp/sl-vue/tree/$(Build.SourceVersion)
+
+- task: PublishBuildArtifacts@1
+  displayName: "Publish analysis logs"
+  inputs:
+    PathtoPublish: "$(Build.ArtifactStagingDirectory)/CodeAnalysisLogs"
+    ArtifactName: "CodeAnalysisLogs"
+    publishLocation: "Container"
