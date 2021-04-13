@@ -18,8 +18,24 @@ steps:
 
 - script: |
     curl https://cdn.shiftleft.io/download/sl > $(Agent.HomeDirectory)/sl && chmod a+rx $(Agent.HomeDirectory)/sl
-    $(Agent.HomeDirectory)/sl analyze --app sl-vue-az --tag branch=$(Build.SourceBranchName) --js --cpg .
+    $(Agent.HomeDirectory)/sl analyze --app sl-vue-az --wait --tag branch=$(Build.SourceBranchName) --js --cpg .
   displayName: 'ShiftLeft NG SAST'
   workingDirectory: '$(Build.SourcesDirectory)'
   env:
     SHIFTLEFT_ACCESS_TOKEN: $(SHIFTLEFT_ACCESS_TOKEN)
+
+- script: |
+    curl -H "Authorization: Bearer ${SHIFTLEFT_ACCESS_TOKEN}" -L "https://www.shiftleft.io/api/v4/orgs/${SHIFTLEFT_ORG_ID}/apps/sl-vue-az/findings?per_page=249&type=secret&type=vuln&type=extscan" -o $(Build.ArtifactStagingDirectory)/CodeAnalysisLogs/findings.json
+    sudo pip install joern2sarif
+    joern2sarif -t ng-sast -i $(Build.ArtifactStagingDirectory)/CodeAnalysisLogs/findings.json -o $(Build.ArtifactStagingDirectory)/CodeAnalysisLogs/ngsast-findings.sarif
+  displayName: 'Convert to SARIF'
+  workingDirectory: '$(Build.SourcesDirectory)'
+  env:
+    SHIFTLEFT_ACCESS_TOKEN: $(SHIFTLEFT_ACCESS_TOKEN)
+
+- task: PublishBuildArtifacts@1
+  displayName: "Publish analysis logs"
+  inputs:
+    PathtoPublish: "$(Build.ArtifactStagingDirectory)/CodeAnalysisLogs"
+    ArtifactName: "CodeAnalysisLogs"
+    publishLocation: "Container"
