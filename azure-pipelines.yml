@@ -33,6 +33,7 @@ steps:
   workingDirectory: '$(Build.SourcesDirectory)'
   env:
     SHIFTLEFT_ACCESS_TOKEN: $(SHIFTLEFT_ACCESS_TOKEN)
+    WORKSPACE: https://github.com/HooliCorp/sl-vue/tree/$(Build.SourceBranchName)
 
 - task: PublishBuildArtifacts@1
   displayName: "Publish analysis logs"
