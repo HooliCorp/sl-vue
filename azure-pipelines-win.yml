@@ -21,9 +21,10 @@ steps:
   env:
     SHIFTLEFT_ACCESS_TOKEN: $(SHIFTLEFT_ACCESS_TOKEN)
 
-- task: CmdLine@2
+- task: PowerShell@2
   displayName: Analyze with NG SAST
   inputs:
+    targetType: 'inline'
     script: |
       $(Agent.HomeDirectory)\sl.exe analyze --verbose --wait --app sl-vue-az-win --tag branch=$(Build.SourceBranchName) --js --cpg .
     workingDirectory: '$(Build.SourcesDirectory)'
