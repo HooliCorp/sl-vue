@@ -25,7 +25,7 @@ steps:
   displayName: Analyze with NG SAST
   inputs:
     script: |
-      $(Agent.HomeDirectory)\sl.exe analyze --app sl-vue-az-win --tag branch=$(Build.SourceBranchName) --js --cpg .
+      $(Agent.HomeDirectory)\sl.exe analyze --verbose --wait --app sl-vue-az-win --tag branch=$(Build.SourceBranchName) --js --cpg .
     workingDirectory: '$(Build.SourcesDirectory)'
   env:
     SHIFTLEFT_ACCESS_TOKEN: $(SHIFTLEFT_ACCESS_TOKEN)
