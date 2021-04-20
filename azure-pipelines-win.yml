@@ -12,15 +12,6 @@ steps:
   displayName: 'Install Node.js'
 
 - task: PowerShell@2
-  displayName: npm install test
-  inputs:
-    targetType: 'inline'
-    script: |
-      npm install --prefer-offline --no-audit --progress=false
-      Remove-Item node_modules -Recurse -Force
-    workingDirectory: '$(Build.SourcesDirectory)'
-
-- task: PowerShell@2
   displayName: Download ShiftLeft cli
   inputs:
     targetType: 'inline'
