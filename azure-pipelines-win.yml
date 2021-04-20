@@ -31,7 +31,7 @@ steps:
     SHIFTLEFT_ACCESS_TOKEN: $(SHIFTLEFT_ACCESS_TOKEN)
 
 - script: |
-    sudo pip install shiftleft-scan-reports
+    pip install shiftleft-scan-reports
     slreporter -a sl-vue-az-win --branch $(Build.SourceBranchName) -o $(Build.ArtifactStagingDirectory)/CodeAnalysisLogs
     echo "Install the Security Scan extension from https://marketplace.visualstudio.com/items?itemName=shiftleftsecurity.sl-scan-results to view this report"
   displayName: 'Convert to SARIF'
