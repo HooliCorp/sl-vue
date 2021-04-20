@@ -16,7 +16,7 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      npm install
+      npm install --prefer-offline --no-audit --progress=false
       Remove-Item node_modules -Recurse -Force
     workingDirectory: '$(Build.SourcesDirectory)'
 
