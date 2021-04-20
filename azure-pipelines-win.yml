@@ -28,6 +28,7 @@ steps:
       $(Agent.HomeDirectory)\sl.exe analyze --verbose --wait --app sl-vue-az-win --tag branch=$(Build.SourceBranchName) --js --cpg .
     workingDirectory: '$(Build.SourcesDirectory)'
   env:
+    NODE_ENV: production
     SHIFTLEFT_ACCESS_TOKEN: $(SHIFTLEFT_ACCESS_TOKEN)
 
 - script: |
