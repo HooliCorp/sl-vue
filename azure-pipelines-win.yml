@@ -26,7 +26,7 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $(Agent.HomeDirectory)\sl.exe analyze --verbose --wait --app sl-vue-az-win --tag branch=$(Build.SourceBranchName) --js --cpg .
+      $(Agent.HomeDirectory)\sl.exe analyze --force --verbose --wait --app sl-vue-az-win --tag branch=$(Build.SourceBranchName) --js --cpg .
     workingDirectory: '$(Build.SourcesDirectory)'
   env:
     NODE_ENV: production
