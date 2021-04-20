@@ -12,6 +12,15 @@ steps:
   displayName: 'Install Node.js'
 
 - task: PowerShell@2
+  displayName: npm install test
+  inputs:
+    targetType: 'inline'
+    script: |
+      npm install
+      Remove-Item node_modules -Recurse -Force
+    workingDirectory: '$(Build.SourcesDirectory)'
+
+- task: PowerShell@2
   displayName: Download ShiftLeft cli
   inputs:
     targetType: 'inline'
@@ -29,7 +38,6 @@ steps:
       $(Agent.HomeDirectory)\sl.exe analyze --force --verbose --wait --app sl-vue-az-win --tag branch=$(Build.SourceBranchName) --js --cpg .
     workingDirectory: '$(Build.SourcesDirectory)'
   env:
-    NODE_ENV: ci
     SHIFTLEFT_ACCESS_TOKEN: $(SHIFTLEFT_ACCESS_TOKEN)
 
 - script: |
