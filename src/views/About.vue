@@ -64,7 +64,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component';
-
+import * as _ from 'lodash';
 
 @Component
 export default class About extends Vue {
@@ -93,7 +93,8 @@ export default class About extends Vue {
     const response = await fetch("https://jsonplaceholder.typicode.com/posts", requestOptions);
     const data = await response.json();
     this.overrideName = data.name;
-    this.overrideEmail = data.email;
+    const compiled = _.template('Hello <%= email %>!');
+    this.overrideEmail = compiled({ 'email': data.email });
   }
 }
 
