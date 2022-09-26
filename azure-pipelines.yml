@@ -18,7 +18,7 @@ steps:
 
 - script: |
     curl https://cdn.shiftleft.io/download/sl > $(Agent.HomeDirectory)/sl && chmod a+rx $(Agent.HomeDirectory)/sl
-    $(Agent.HomeDirectory)/sl analyze --app sl-vue-az --wait --tag branch=$(Build.SourceBranchName) --js --cpg .
+    $(Agent.HomeDirectory)/sl analyze --app sl-vue-az --verbose --wait --tag branch=$(Build.SourceBranchName) --js --cpg .
   displayName: 'ShiftLeft NG SAST'
   workingDirectory: '$(Build.SourcesDirectory)'
   env:
