@@ -26,24 +26,7 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $(Agent.HomeDirectory)\sl.exe analyze --force --verbose --wait --app sl-vue-az-win --tag branch=$(Build.SourceBranchName) --js --cpg .
+      $(Agent.HomeDirectory)\sl.exe analyze --wait --app sl-vue-az-win --tag branch=$(Build.SourceBranchName) --js --cpg .
     workingDirectory: '$(Build.SourcesDirectory)'
   env:
     SHIFTLEFT_ACCESS_TOKEN: $(SHIFTLEFT_ACCESS_TOKEN)
-
-- script: |
-    pip install shiftleft-scan-reports
-    slreporter -a sl-vue-az-win --branch $(Build.SourceBranchName) -o $(Build.ArtifactStagingDirectory)/CodeAnalysisLogs
-    echo "Install the Security Scan extension from https://marketplace.visualstudio.com/items?itemName=shiftleftsecurity.sl-scan-results to view this report"
-  displayName: 'Convert to SARIF'
-  workingDirectory: '$(Build.SourcesDirectory)'
-  env:
-    SHIFTLEFT_ACCESS_TOKEN: $(SHIFTLEFT_ACCESS_TOKEN)
-    WORKSPACE: https://github.com/HooliCorp/sl-vue/tree/$(Build.SourceVersion)
-
-- task: PublishBuildArtifacts@1
-  displayName: "Publish analysis logs"
-  inputs:
-    PathtoPublish: "$(Build.ArtifactStagingDirectory)/CodeAnalysisLogs"
-    ArtifactName: "CodeAnalysisLogs"
-    publishLocation: "Container"
